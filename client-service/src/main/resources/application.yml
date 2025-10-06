@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: crypto-client-service
+
+sidecar:
+  rest:
+    base-url: http://localhost:8081
+
+grpc:
+  client:
+    cryptoSidecar:
+      address: static://localhost:9090
+      negotiationType: plaintext
+
+logging:
+  level:
+    com.example.client: INFO

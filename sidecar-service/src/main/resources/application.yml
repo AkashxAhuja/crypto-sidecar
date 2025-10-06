@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: crypto-sidecar-service
+
+logging:
+  level:
+    com.example.sidecar: INFO
+
+grpc:
+  server:
+    port: 9090

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.crypto.proto";
+option java_outer_classname = "DecryptionProto";
+
+package crypto;
+
+service CryptoDecryptionService {
+  rpc Decrypt (DecryptRequest) returns (DecryptResponse);
+}
+
+message DecryptRequest {
+  string key_id = 1;
+  string cipher_text = 2;
+}
+
+message DecryptResponse {
+  string plain_text = 1;
+}
