@@ -40,27 +40,36 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- MVC (Tomcat) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Needed for WebClient -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- gRPC client starter (fixed version) -->
+        <!-- gRPC client starter (if you actually use gRPC from the client) -->
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-client-spring-boot-starter</artifactId>
             <version>${grpc.spring.starter.version}</version>
         </dependency>
 
-        <!-- If your client uses generated stubs/messages -->
+        <!-- Generated stubs/messages shared module -->
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>crypto-proto</artifactId>
