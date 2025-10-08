@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  sidecar-service:
+    build:
+      context: ../..
+      dockerfile: sidecar-service/Dockerfile
+    image: crypto-sidecar/sidecar-service:latest
+    container_name: crypto-sidecar-service
+    env_file:
+      - sidecar-service.env
+    ports:
+      - "8081:8081"
+      - "9090:9090"
+
+  client-service:
+    build:
+      context: ../..
+      dockerfile: client-service/Dockerfile
+    image: crypto-sidecar/client-service:latest
+    container_name: crypto-client-service
+    depends_on:
+      - sidecar-service
+    env_file:
+      - client-service.env
+    ports:
+      - "8080:8080"
