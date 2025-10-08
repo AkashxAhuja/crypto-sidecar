@@ -80,21 +80,47 @@ To send the same request over gRPC, change `"protocol": "GRPC"`. The client forw
 
 Logs in both containers will show the call path and whether cached keys were used.
 
-## Docker images
+## Container images
 
 Build the sidecar image:
 
 ```bash
-docker build -t crypto-sidecar-service -f sidecar-service/Dockerfile .
+docker build -t crypto-sidecar/sidecar-service:latest -f sidecar-service/Dockerfile .
 ```
 
 Build the client image:
 
 ```bash
-docker build -t crypto-client-service -f client-service/Dockerfile .
+docker build -t crypto-sidecar/client-service:latest -f client-service/Dockerfile .
 ```
 
 When deployed to Kubernetes, place both containers in the same pod and expose ports `8080` (client), `8081` (sidecar REST) and `9090` (sidecar gRPC).
+
+## Running with Docker Compose
+
+The `deploy/docker` folder contains a compose file and environment definitions that build the images and run both services as coordinated containers on a shared Docker network:
+
+```bash
+cd deploy/docker
+docker compose up --build
+```
+
+The sidecar stays reachable on `localhost:8081`/`9090` and the client on `localhost:8080`.
+
+## Kubernetes (Minikube) deployment
+
+Manifests under `deploy/k8s` provision a pod that hosts both containers side-by-side so they can communicate over the pod network. To deploy to Minikube:
+
+```bash
+minikube start
+eval "$(minikube -p minikube docker-env)"
+docker build -t crypto-sidecar/sidecar-service:latest -f sidecar-service/Dockerfile .
+docker build -t crypto-sidecar/client-service:latest -f client-service/Dockerfile .
+kubectl apply -f deploy/k8s/crypto-sidecar-pod.yaml
+kubectl apply -f deploy/k8s/crypto-sidecar-service.yaml
+```
+
+Use `minikube service crypto-sidecar-service --url` to obtain reachable URLs for the exposed ports. Detailed step-by-step instructions live in `deploy/k8s/README.md`.
 
 ## Testing
 
