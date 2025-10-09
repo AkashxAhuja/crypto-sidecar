@@ -51,4 +51,23 @@ class CryptoServiceTest {
         assertThat(first).isEqualTo(second).isEqualTo("repeatable-secret");
         assertThat(mockKmsClient.getLookupCount()).isEqualTo(1);
     }
+
+    @Test
+    void encryptShouldProduceDecryptableCiphertext() {
+        String cipherText = cryptoService.encrypt(KEY_ID, "top-secret-order");
+
+        String decrypted = cryptoService.decrypt(KEY_ID, cipherText);
+
+        assertThat(decrypted).isEqualTo("top-secret-order");
+    }
+
+    @Test
+    void encryptShouldReuseCachedSecretKey() {
+        mockKmsClient.resetCounter();
+
+        cryptoService.encrypt(KEY_ID, "order-1");
+        cryptoService.encrypt(KEY_ID, "order-2");
+
+        assertThat(mockKmsClient.getLookupCount()).isEqualTo(1);
+    }
 }
