@@ -3,6 +3,7 @@ package com.example.sidecar.service;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -20,11 +21,33 @@ public class CryptoService {
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
     private static final int IV_LENGTH = 12;
     private static final int TAG_LENGTH_BIT = 128;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final SecretKeyCache secretKeyCache;
 
     public CryptoService(SecretKeyCache secretKeyCache) {
         this.secretKeyCache = secretKeyCache;
+    }
+
+    public String encrypt(String keyId, String plainText) {
+        SecretKey secretKey = secretKeyCache.getSecretKey(keyId);
+        byte[] iv = new byte[IV_LENGTH];
+        SECURE_RANDOM.nextBytes(iv);
+
+        try {
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
+            byte[] cipherBytes = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+
+            ByteBuffer buffer = ByteBuffer.allocate(iv.length + cipherBytes.length);
+            buffer.put(iv);
+            buffer.put(cipherBytes);
+            String cipherText = Base64.getEncoder().encodeToString(buffer.array());
+            log.info("Successfully encrypted payload for keyId={}", keyId);
+            return cipherText;
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Unable to encrypt payload", e);
+        }
     }
 
     public String decrypt(String keyId, String cipherTextBase64) {
