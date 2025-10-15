@@ -31,12 +31,12 @@ class CryptoServiceTest {
     @Test
     void decryptShouldReturnOriginalPlaintext() {
         SecretKey key = secretKeyCache.getSecretKey(KEY_ID);
-        String cipherText = TestEncryptionUtils.encrypt(key, "classified-order");
+        String cipherText = TestEncryptionUtils.encrypt(key, "test");
         mockKmsClient.resetCounter();
 
         String decrypted = cryptoService.decrypt(KEY_ID, cipherText);
 
-        assertThat(decrypted).isEqualTo("classified-order");
+        assertThat(decrypted).isEqualTo("test");
     }
 
     @Test
